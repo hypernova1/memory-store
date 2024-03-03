@@ -3,6 +3,7 @@ package org.sam.store.order;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.Table;
 import lombok.Getter;
 import org.sam.store.common.BaseEntity;
 import org.sam.store.product.Product;
@@ -13,6 +14,7 @@ import java.util.List;
 
 @Entity
 @Getter
+@Table(name = "orders")
 public class Order extends BaseEntity {
 
     @Id
