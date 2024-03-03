@@ -21,4 +21,7 @@ public class ProductService {
                 .orElseThrow(ProductNotFoundException::new);
     }
 
+    public List<Product> findByIds(List<String> productIds) {
+        return this.productRepository.findByIds(productIds);
+    }
 }
