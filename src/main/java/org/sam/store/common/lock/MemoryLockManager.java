@@ -1,13 +1,17 @@
 package org.sam.store.common.lock;
 
+import org.springframework.stereotype.Component;
+
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
+@Component
 public class MemoryLockManager implements LockManager {
 
     private static final long DEFAULT_ADDITIONAL_NANO_TIME = 1000 * 60L;
-    private final List<Lock> locks = new ArrayList<>();
+    private final List<Lock> locks = Collections.synchronizedList(new ArrayList<>());
 
     @Override
     public void set(String id) {
@@ -36,6 +40,10 @@ public class MemoryLockManager implements LockManager {
         Lock lock = this.findLock(id)
                 .orElseThrow(RuntimeException::new);
         lock.extendExpiredTime(nanoTime);
+    }
+
+    public Lock get(String id) {
+        return this.findLock(id).orElseThrow(RuntimeException::new);
     }
 
     private Optional<Lock> findLock(String id) {
