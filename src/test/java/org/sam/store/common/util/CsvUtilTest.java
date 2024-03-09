@@ -1,0 +1,16 @@
+package org.sam.store.common.util;
+
+import org.junit.jupiter.api.Test;
+import org.sam.store.product.Product;
+
+import java.util.List;
+
+class CsvUtilTest {
+
+    @Test
+    void get_resource() {
+        List<Product> products = CsvUtil.createInstance("test_data.csv", Product.class);
+        System.out.println(products.size());
+    }
+
+}

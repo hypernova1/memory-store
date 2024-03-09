@@ -4,11 +4,13 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import lombok.Getter;
+import lombok.ToString;
 import org.sam.store.common.BaseEntity;
 import org.sam.store.common.exception.SoldOutException;
 
 @Entity
 @Getter
+@ToString
 public class Product extends BaseEntity {
     @Id
     private String id;

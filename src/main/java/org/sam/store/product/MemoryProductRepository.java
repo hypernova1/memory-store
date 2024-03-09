@@ -1,6 +1,6 @@
 package org.sam.store.product;
 
-import org.sam.store.common.util.CsvReader;
+import org.sam.store.common.util.CsvUtil;
 import org.springframework.stereotype.Repository;
 
 import java.util.ArrayList;
@@ -14,7 +14,7 @@ public class MemoryProductRepository implements ProductRepository {
     private final List<Product> items;
 
     {
-        this.items = CsvReader.read("test_data.csv", 1);
+        this.items = CsvUtil.createInstance("test_data.csv", Product.class);
     }
 
     @Override
