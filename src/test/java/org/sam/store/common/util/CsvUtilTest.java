@@ -1,4 +1,5 @@
 package org.sam.store.common.util;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import org.junit.jupiter.api.Test;
 import org.sam.store.product.Product;
@@ -10,7 +11,7 @@ class CsvUtilTest {
     @Test
     void get_resource() {
         List<Product> products = CsvUtil.createInstance("test_data.csv", Product.class);
-        System.out.println(products.size());
+        assertThat(products.size()).isNotZero();
     }
 
 }

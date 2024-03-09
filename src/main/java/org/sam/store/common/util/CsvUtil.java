@@ -18,7 +18,7 @@ import java.util.List;
  * */
 public class CsvUtil {
 
-    public static <T> List<T> createInstance(String filePath, Class<T> _clazz) {
+    public static <T> List<T> createInstance(String filePath, Class<T> clazz) {
         ClassPathResource resource = new ClassPathResource(filePath);
         try {
             Path path = Paths.get(resource.getURI());
@@ -28,7 +28,7 @@ public class CsvUtil {
             List<T> result = new ArrayList<>();
             for (int i = 1; i < contentsList.size(); i++) {
                 String[] contents = contentsList.get(i).split(",");
-                result.add(createNewInstance(_clazz, csvFieldNames, contents));
+                result.add(createNewInstance(clazz, csvFieldNames, contents));
             }
             return result;
         } catch (IOException e) {
@@ -36,17 +36,17 @@ public class CsvUtil {
         }
     }
 
-    private static <T> T createNewInstance(Class<T> _clazz, String[] csvFieldNames, String[] contents) {
+    private static <T> T createNewInstance(Class<T> clazz, String[] csvFieldNames, String[] contents) {
         try {
-            T instance = _clazz.newInstance();
-            Class<?> clazz = instance.getClass();
-            Field[] fields = clazz.getDeclaredFields();
+            T instance = clazz.getConstructor().newInstance();
+            Class<?> instanceClass = instance.getClass();
+            Field[] fields = instanceClass.getDeclaredFields();
 
             for (Field field : fields) {
                 setField(csvFieldNames, contents, field, instance);
             }
             return instance;
-        } catch (InstantiationException | IllegalAccessException e) {
+        } catch (InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
             throw new RuntimeException(e);
         }
 
