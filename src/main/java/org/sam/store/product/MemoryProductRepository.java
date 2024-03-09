@@ -14,7 +14,7 @@ public class MemoryProductRepository implements ProductRepository {
     private final List<Product> items;
 
     {
-        this.items = CsvReader.read("test_data.csv");
+        this.items = CsvReader.read("test_data.csv", 1);
     }
 
     @Override

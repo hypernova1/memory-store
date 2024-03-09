@@ -6,6 +6,7 @@ class CsvReaderTest {
 
     @Test
     void get_resource() {
+        CsvReader.read("test_data.csv", 1);
     }
 
 }

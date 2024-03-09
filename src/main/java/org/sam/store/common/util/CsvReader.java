@@ -11,12 +11,11 @@ import java.util.List;
 
 public class CsvReader {
 
-    public static <T> List<T> read(String filePath) {
+    public static <T> List<T> read(String filePath, int ignoreLineLength) {
         ClassPathResource resource = new ClassPathResource(filePath);
         try {
             Path path = Paths.get(resource.getURI());
-//            List<String> content = Files.readAllLines(path);
-
+            List<String> content = Files.readAllLines(path);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
