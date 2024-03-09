@@ -1,6 +1,7 @@
 package org.sam.store.order;
 
 import lombok.AllArgsConstructor;
+import org.sam.store.common.exception.BadOrderRequestException;
 import org.sam.store.common.exception.OrderNotFoundException;
 import org.sam.store.product.Product;
 import org.sam.store.product.ProductService;
@@ -20,17 +21,22 @@ public class OrderService {
     public void order(OrderForm orderForm) {
         List<String> productIds = orderForm.getProducts()
                 .stream()
-                .map(OrderProductDto::getProductId).distinct().collect(Collectors.toCollection(ArrayList::new));
+                .map(OrderProductDto::getProductId)
+                .distinct()
+                .collect(Collectors.toCollection(ArrayList::new));
         List<Product> products = productService.findByIds(productIds);
+
         if (products.size() != productIds.size()) {
-            return;
+            throw new BadOrderRequestException();
         }
+
         Order order = Order.create(orderForm, products);
         this.orderRepository.save(order);
     }
 
     public void cancel(Long id) {
-        Order order = this.orderRepository.findOne(id).orElseThrow(OrderNotFoundException::new);
+        Order order = this.orderRepository.findOne(id)
+                .orElseThrow(OrderNotFoundException::new);
         order.cancel();
         orderRepository.save(order);
     }

@@ -10,22 +10,22 @@ import java.util.stream.Collectors;
 @Repository
 public class MemoryOrderRepository implements OrderRepository {
 
-    private final List<Order> orders = new ArrayList<>();
+    private final List<Order> items = new ArrayList<>();
 
     @Override
     public void save(Order order) {
-        List<Long> orderIds = this.orders.stream().mapToLong(Order::getId).boxed().collect(Collectors.toCollection(ArrayList::new));
+        List<Long> orderIds = this.items.stream().mapToLong(Order::getId).boxed().collect(Collectors.toCollection(ArrayList::new));
         int targetOrderId = orderIds.indexOf(order.getId());
         if (targetOrderId == -1) {
-            this.orders.add(order);
+            this.items.add(order);
             return;
         }
-        this.orders.set(targetOrderId, order);
+        this.items.set(targetOrderId, order);
     }
 
     @Override
     public Optional<Order> findOne(Long id) {
-        return this.orders.stream().filter((order) -> order.getId().equals(id)).findFirst();
+        return this.items.stream().filter((order) -> order.getId().equals(id)).findFirst();
     }
 
 }
