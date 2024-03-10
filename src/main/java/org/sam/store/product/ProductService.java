@@ -2,6 +2,7 @@ package org.sam.store.product;
 
 import lombok.AllArgsConstructor;
 import org.sam.store.common.exception.ProductNotFoundException;
+import org.sam.store.common.lock.LockManager;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -11,6 +12,7 @@ import java.util.List;
 public class ProductService {
 
     private final ProductRepository productRepository;
+    private final LockManager lockManager;
 
     public List<Product> getProducts(int page, int size) {
         return this.productRepository.findAll();
@@ -23,5 +25,9 @@ public class ProductService {
 
     public List<Product> findByIds(List<String> productIds) {
         return this.productRepository.findByIds(productIds);
+    }
+
+    public void decreaseProductsQuantity() {
+        lockManager.setOrWait("decrease_product_quantity");
     }
 }

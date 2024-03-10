@@ -21,4 +21,8 @@ public class Lock {
         this.expiredTime = this.expiredTime.plusNanos(additionalNanoTime);
     }
 
+    public boolean isExpired() {
+        return LocalDateTime.now().isBefore(this.expiredTime);
+    }
+
 }
