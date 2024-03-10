@@ -41,7 +41,6 @@ public class Order extends BaseEntity {
     }
 
     public void addProduct(Product product, int quantity) {
-        product.decreaseQuantity(quantity);
         this.orderProducts.add(OrderProduct.of(product, quantity));
     }
 

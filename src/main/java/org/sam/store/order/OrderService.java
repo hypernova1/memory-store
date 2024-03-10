@@ -4,8 +4,10 @@ import lombok.AllArgsConstructor;
 import org.sam.store.common.exception.BadOrderRequestException;
 import org.sam.store.common.exception.OrderNotFoundException;
 import org.sam.store.product.Product;
+import org.sam.store.product.ProductQuantityInfo;
 import org.sam.store.product.ProductService;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,26 +21,28 @@ public class OrderService {
     private final ProductService productService;
 
     public void order(OrderForm orderForm) {
-        List<String> productIds = orderForm.getProducts()
+        List<ProductQuantityInfo> productQuantityInfos = orderForm.getProducts()
                 .stream()
-                .map(OrderProductDto::getProductId)
-                .distinct()
+                .map((product) -> new ProductQuantityInfo(product.getProductId(), product.getQuantity()))
                 .collect(Collectors.toCollection(ArrayList::new));
-        List<Product> products = productService.findByIds(productIds);
 
-        if (products.size() != productIds.size()) {
-            throw new BadOrderRequestException();
-        }
+        List<Product> products = productService.decreaseProductsQuantity(productQuantityInfos);
 
         Order order = Order.create(orderForm, products);
         this.orderRepository.save(order);
     }
 
+    @Transactional
     public void cancel(Long id) {
         Order order = this.orderRepository.findOne(id)
                 .orElseThrow(OrderNotFoundException::new);
         order.cancel();
-        orderRepository.save(order);
+
+        List<ProductQuantityInfo> productQuantityInfos = order.getOrderProducts().stream()
+                .map((orderProduct) -> new ProductQuantityInfo(orderProduct.getProduct().getId(), orderProduct.getQuantity()))
+                .collect(Collectors.toCollection(ArrayList::new));
+
+        this.productService.increaseProductsQuantity(productQuantityInfos);
     }
 
 

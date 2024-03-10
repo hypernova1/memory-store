@@ -1,6 +1,7 @@
 package org.sam.store.product;
 
 import org.sam.store.common.util.CsvUtil;
+import org.sam.store.order.Order;
 import org.springframework.stereotype.Repository;
 
 import java.util.ArrayList;
@@ -15,6 +16,22 @@ public class MemoryProductRepository implements ProductRepository {
 
     {
         this.items = CsvUtil.createInstance("test_data.csv", Product.class);
+    }
+
+    @Override
+    public void save(Product product) {
+        List<String> productIds = this.items.stream().map(Product::getId).collect(Collectors.toCollection(ArrayList::new));
+        int targetProductId = productIds.indexOf(product.getId());
+        if (targetProductId == -1) {
+            this.items.add(product);
+            return;
+        }
+        this.items.set(targetProductId, product);
+    }
+
+    @Override
+    public void saveAll(List<Product> products) {
+        products.forEach(this::save);
     }
 
     @Override

@@ -9,7 +9,6 @@ import java.util.*;
 public class MemoryLockManager implements LockManager {
 
     private static final long DEFAULT_ADDITIONAL_NANO_TIME = 1000 * 60L;
-
     private static final int MAX_WAITING_TIME = 1000 * 60;
     private final List<Lock> locks = Collections.synchronizedList(new ArrayList<>());
 
@@ -29,7 +28,6 @@ public class MemoryLockManager implements LockManager {
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }
-
     }
 
     @Override
@@ -69,14 +67,14 @@ public class MemoryLockManager implements LockManager {
     @Transactional
     public boolean exists(String id) {
         Optional<Lock> lock = this.locks.stream().filter((l) -> l.getId().equals(id)).findFirst();
-        if (lock.isPresent()) {
-            if (lock.get().isExpired()) {
-                release(id);
-                return false;
-            }
-            return true;
+        if (lock.isEmpty()) {
+            return false;
         }
-        return false;
+        if (lock.get().isExpired()) {
+            release(id);
+            return false;
+        }
+        return true;
     }
 
     public Lock get(String id) {
