@@ -1,4 +1,6 @@
 package org.sam.store.common.exception;
 
-public class ProductNotFoundException extends RuntimeException {
+import org.sam.store.common.exception.http.NotFoundException;
+
+public class ProductNotFoundException extends NotFoundException {
 }

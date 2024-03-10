@@ -1,4 +1,6 @@
 package org.sam.store.common.exception;
 
-public class BadOrderRequestException extends RuntimeException {
+import org.sam.store.common.exception.http.BadRequestException;
+
+public class BadOrderRequestException extends BadRequestException {
 }

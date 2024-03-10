@@ -14,7 +14,7 @@ public class MemoryLockManager implements LockManager {
 
     @Override
     @Transactional
-    public void setOrWait(String id) {
+    public void acquire(String id) {
         try {
             int waitTime = 0;
             while (waitTime < MAX_WAITING_TIME) {

@@ -7,7 +7,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -35,7 +34,7 @@ public class ProductService {
     @Transactional
     public List<Product> decreaseProductsQuantity(List<ProductQuantityInfo> productQuantityInfos) {
         String lockKey = "product_quantity";
-        lockManager.setOrWait(lockKey);
+        lockManager.acquire(lockKey);
 
         List<String> productIds = productQuantityInfos.stream().map(ProductQuantityInfo::getProductId).collect(Collectors.toCollection(ArrayList::new));
         List<Product> products = this.productRepository.findByIds(productIds);
@@ -52,7 +51,7 @@ public class ProductService {
     @Transactional
     public List<Product> increaseProductsQuantity(List<ProductQuantityInfo> productQuantityInfos) {
         String lockKey = "product_quantity";
-        lockManager.setOrWait(lockKey);
+        lockManager.acquire(lockKey);
 
         List<String> productIds = productQuantityInfos.stream().map(ProductQuantityInfo::getProductId).collect(Collectors.toCollection(ArrayList::new));
         List<Product> products = this.productRepository.findByIds(productIds);
