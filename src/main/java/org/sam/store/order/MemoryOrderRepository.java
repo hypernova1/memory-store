@@ -1,5 +1,6 @@
 package org.sam.store.order;
 
+import org.sam.store.common.repository.DefaultMemoryRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.ArrayList;
@@ -8,7 +9,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Repository
-public class MemoryOrderRepository implements OrderRepository {
+public class MemoryOrderRepository extends DefaultMemoryRepository<Order, String> implements OrderRepository {
 
     private final List<Order> items = new ArrayList<>();
 
