@@ -1,12 +1,9 @@
 package org.sam.store.product;
 
-import java.util.List;
-import java.util.Optional;
+import org.sam.store.common.repository.Repository;
 
-public interface ProductRepository {
-    void save(Product product);
-    void saveAll(List<Product> products);
-    List<Product> findAll();
-    Optional<Product> findOne(String id);
+import java.util.List;
+
+public interface ProductRepository extends Repository<Product, String> {
     List<Product> findByIds(List<String> productIds);
 }

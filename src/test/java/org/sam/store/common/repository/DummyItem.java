@@ -8,10 +8,9 @@ import java.util.UUID;
 @Entity
 public class DummyItem {
 
+    private String value;
     @Id
     private String id;
-
-    private String value;
 
     protected DummyItem() {}
 

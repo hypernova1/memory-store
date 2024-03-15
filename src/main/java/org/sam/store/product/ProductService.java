@@ -23,7 +23,7 @@ public class ProductService {
     }
 
     public Product getProduct(String id) {
-        return this.productRepository.findOne(id)
+        return this.productRepository.findById(id)
                 .orElseThrow(ProductNotFoundException::new);
     }
 

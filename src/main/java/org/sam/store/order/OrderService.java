@@ -1,7 +1,6 @@
 package org.sam.store.order;
 
 import lombok.AllArgsConstructor;
-import org.sam.store.common.exception.BadOrderRequestException;
 import org.sam.store.common.exception.OrderNotFoundException;
 import org.sam.store.product.Product;
 import org.sam.store.product.ProductQuantityInfo;

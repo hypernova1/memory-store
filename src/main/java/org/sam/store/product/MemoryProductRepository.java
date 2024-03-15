@@ -1,5 +1,6 @@
 package org.sam.store.product;
 
+import org.sam.store.common.repository.DefaultMemoryRepository;
 import org.sam.store.common.util.CsvUtil;
 import org.sam.store.order.Order;
 import org.springframework.stereotype.Repository;
@@ -10,7 +11,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Repository
-public class MemoryProductRepository implements ProductRepository {
+public class MemoryProductRepository extends DefaultMemoryRepository<Product, String> implements ProductRepository {
 
     private final List<Product> items;
 
@@ -19,33 +20,8 @@ public class MemoryProductRepository implements ProductRepository {
     }
 
     @Override
-    public void save(Product product) {
-        List<String> productIds = this.items.stream().map(Product::getId).collect(Collectors.toCollection(ArrayList::new));
-        int targetProductId = productIds.indexOf(product.getId());
-        if (targetProductId == -1) {
-            this.items.add(product);
-            return;
-        }
-        this.items.set(targetProductId, product);
-    }
-
-    @Override
-    public void saveAll(List<Product> products) {
-        products.forEach(this::save);
-    }
-
-    @Override
-    public List<Product> findAll() {
-        return this.items;
-    }
-
-    @Override
-    public Optional<Product> findOne(String id) {
-        return items.stream().filter((item) -> item.getId().equals(id)).findFirst();
-    }
-
-    @Override
     public List<Product> findByIds(List<String> productIds) {
         return this.items.stream().filter((product) -> productIds.contains(product.getId())).collect(Collectors.toCollection(ArrayList::new));
     }
+
 }
