@@ -22,6 +22,7 @@ public abstract class DefaultMemoryRepository<T, U> implements Repository<T, U> 
         if (inputItemId == null) {
             throw new IdNotExistException();
         }
+
         for (int i = 0; i < this.items.size(); i++) {
             U itemId = this.getId(items.get(i));
             if (itemId.equals(inputItemId)) {
@@ -77,38 +78,53 @@ public abstract class DefaultMemoryRepository<T, U> implements Repository<T, U> 
         this.items.remove(item);
     }
 
+    @SuppressWarnings("unchecked")
     protected U getId(T t) {
-        return (U) getFieldValueByAnnotationType(t, Id.class);
+        try {
+            return (U) getFieldValue(t, Id.class);
+        } catch (ClassCastException e) {
+           throw new IdTypeNotMatchException();
+        }
     }
 
     private void setUpdatedAt(T t, LocalDateTime now) {
         Field lastMofifiedDateField = this.getPropertyField(t, LastModifiedDate.class);
         if (lastMofifiedDateField != null) {
-            this.setValue(t, now, LastModifiedDate.class);
+            this.setFieldValue(t, now, LastModifiedDate.class);
         }
     }
 
     private void setCreatedAt(T t, LocalDateTime now) {
         Field lastMofifiedDateField = this.getPropertyField(t, CreatedDate.class);
         if (lastMofifiedDateField != null) {
-            this.setValue(t, now, CreatedDate.class);
+            this.setFieldValue(t, now, CreatedDate.class);
         }
     }
 
-    protected void setValue(T t, Object value, Class<? extends Annotation> annotationClass) {
+    protected void setFieldValue(T t, Object value, Class<? extends Annotation> annotationClass) {
         Field field = this.getPropertyField(t, annotationClass);
+        if (field == null) {
+            throw new EntityPropertyNotFoundException();
+        }
+
         field.setAccessible(true);
+
         try {
             field.set(t, value);
-        } catch (IllegalAccessException e) {
+        } catch (IllegalAccessException | EntityPropertyNotFoundException e) {
             throw new RuntimeException(e);
         }
     }
 
-    private Object getFieldValueByAnnotationType(T t, Class<? extends Annotation> annotationClass) {
+    private Object getFieldValue(T t, Class<? extends Annotation> annotationClass) {
         Field field = this.getPropertyField(t, annotationClass);
+        if (field == null) {
+            throw new EntityPropertyNotFoundException();
+        }
+
+        field.setAccessible(true);
+
         try {
-            field.setAccessible(true);
             return field.get(t);
         } catch (NullPointerException | IllegalAccessException e) {
             throw new RuntimeException(e);
