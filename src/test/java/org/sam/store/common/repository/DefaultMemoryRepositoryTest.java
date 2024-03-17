@@ -58,12 +58,4 @@ class DefaultMemoryRepositoryTest {
         assertThat(defaultMemoryRepository.findById(id).get()).isEqualTo(item);
     }
 
-    @Test
-    void find_id() {
-        DummyItem item = DummyItem.createEmptyInstance();
-        String id = UUID.randomUUID().toString();
-        item.setId(id);
-        assertThat(defaultMemoryRepository.getId(item)).isEqualTo(id);
-    }
-
 }

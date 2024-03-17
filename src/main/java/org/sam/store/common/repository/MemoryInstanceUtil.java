@@ -1,5 +1,6 @@
 package org.sam.store.common.repository;
 
+import jakarta.persistence.Id;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 
@@ -8,6 +9,16 @@ import java.lang.reflect.Field;
 import java.time.LocalDateTime;
 
 public class MemoryInstanceUtil {
+
+    @SuppressWarnings("unchecked")
+    protected static  <T, U> U getId(T t) {
+        try {
+            return (U) MemoryInstanceUtil.getFieldValue(t, Id.class);
+        } catch (ClassCastException e) {
+            throw new IdTypeNotMatchException();
+        }
+    }
+
     protected static <T> void setUpdatedAt(T t, LocalDateTime now) {
         Field lastMofifiedDateField = getPropertyField(t, LastModifiedDate.class);
         if (lastMofifiedDateField != null) {
@@ -22,7 +33,7 @@ public class MemoryInstanceUtil {
         }
     }
 
-    protected static <T> void setFieldValue(T t, Object value, Class<? extends Annotation> annotationClass) {
+    private static <T> void setFieldValue(T t, Object value, Class<? extends Annotation> annotationClass) {
         Field field = getPropertyField(t, annotationClass);
         if (field == null) {
             throw new EntityPropertyNotFoundException();
@@ -37,7 +48,7 @@ public class MemoryInstanceUtil {
         }
     }
 
-    protected static <T> Object getFieldValue(T t, Class<? extends Annotation> annotationClass) {
+    private static <T> Object getFieldValue(T t, Class<? extends Annotation> annotationClass) {
         Field field = getPropertyField(t, annotationClass);
         if (field == null) {
             throw new EntityPropertyNotFoundException();
@@ -52,7 +63,7 @@ public class MemoryInstanceUtil {
         }
     }
 
-    protected static <T> Field getPropertyField(T t, Class<? extends Annotation> annotationClass) {
+    private static <T> Field getPropertyField(T t, Class<? extends Annotation> annotationClass) {
         Class<?> clazz = t.getClass();
         Field[] fields = clazz.getDeclaredFields();
 

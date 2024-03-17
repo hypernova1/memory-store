@@ -1,6 +1,5 @@
 package org.sam.store.common.repository;
 
-import jakarta.persistence.Id;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -13,13 +12,13 @@ public abstract class DefaultMemoryRepository<T, U> implements Repository<T, U> 
     @Override
     public T save(T t) {
         LocalDateTime now = LocalDateTime.now();
-        U inputItemId = this.getId(t);
+        U inputItemId = MemoryInstanceUtil.getId(t);
         if (inputItemId == null) {
             throw new IdNotExistException();
         }
 
         for (int i = 0; i < this.items.size(); i++) {
-            U itemId = this.getId(items.get(i));
+            U itemId = MemoryInstanceUtil.getId(items.get(i));
             if (itemId.equals(inputItemId)) {
                 MemoryInstanceUtil.setUpdatedAt(t, now);
                 this.items.set(i, t);
@@ -41,7 +40,7 @@ public abstract class DefaultMemoryRepository<T, U> implements Repository<T, U> 
     @Override
     public Optional<T> findById(U id) {
         for (T item : this.items) {
-            U itemId = this.getId(item);
+            U itemId = MemoryInstanceUtil.getId(item);
             if (itemId.equals(id)) {
                 return Optional.of(item);
             }
@@ -71,15 +70,6 @@ public abstract class DefaultMemoryRepository<T, U> implements Repository<T, U> 
             return;
         }
         this.items.remove(item);
-    }
-
-    @SuppressWarnings("unchecked")
-    protected U getId(T t) {
-        try {
-            return (U) MemoryInstanceUtil.getFieldValue(t, Id.class);
-        } catch (ClassCastException e) {
-           throw new IdTypeNotMatchException();
-        }
     }
 
 }
