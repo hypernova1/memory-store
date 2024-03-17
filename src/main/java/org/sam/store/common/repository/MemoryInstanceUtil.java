@@ -1,9 +1,9 @@
 package org.sam.store.common.repository;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import org.springframework.data.annotation.CreatedDate;
-import org.springframework.data.annotation.LastModifiedDate;
+import org.sam.store.common.repository.annotation.CreatedDate;
+import org.sam.store.common.repository.annotation.Entity;
+import org.sam.store.common.repository.annotation.Id;
+import org.sam.store.common.repository.annotation.UpdatedDate;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
@@ -26,9 +26,9 @@ public class MemoryInstanceUtil {
     }
 
     protected static <T> void setUpdatedAt(T t, LocalDateTime now) {
-        Field lastMofifiedDateField = getPropertyField(t, LastModifiedDate.class);
+        Field lastMofifiedDateField = getPropertyField(t, UpdatedDate.class);
         if (lastMofifiedDateField != null) {
-            setFieldValue(t, now, LastModifiedDate.class);
+            setFieldValue(t, now, UpdatedDate.class);
         }
     }
 

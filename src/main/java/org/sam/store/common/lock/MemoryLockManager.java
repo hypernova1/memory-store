@@ -1,7 +1,7 @@
 package org.sam.store.common.lock;
 
+
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
 
@@ -13,7 +13,6 @@ public class MemoryLockManager implements LockManager {
     private final List<Lock> locks = Collections.synchronizedList(new ArrayList<>());
 
     @Override
-    @Transactional
     public void acquire(String id) {
         try {
             int waitTime = 0;
@@ -31,12 +30,10 @@ public class MemoryLockManager implements LockManager {
     }
 
     @Override
-    @Transactional
     public void set(String id) {
         this.set(id, DEFAULT_ADDITIONAL_NANO_TIME);
     }
 
-    @Transactional
     public void set(String id, long additionalNanoTime) {
         if (exists(id)) {
             throw new AlreadyLockException();
@@ -47,7 +44,6 @@ public class MemoryLockManager implements LockManager {
     }
 
     @Override
-    @Transactional
     public void release(String id) {
         Lock lock = findLock(id)
                 .orElseThrow(NoLockException::new);
@@ -56,7 +52,6 @@ public class MemoryLockManager implements LockManager {
     }
 
     @Override
-    @Transactional
     public void extendsTime(String id, long nanoTime) {
         Lock lock = this.findLock(id)
                 .orElseThrow(NoLockException::new);
@@ -64,7 +59,6 @@ public class MemoryLockManager implements LockManager {
     }
 
     @Override
-    @Transactional
     public boolean exists(String id) {
         Optional<Lock> lock = this.locks.stream().filter((l) -> l.getId().equals(id)).findFirst();
         if (lock.isEmpty()) {

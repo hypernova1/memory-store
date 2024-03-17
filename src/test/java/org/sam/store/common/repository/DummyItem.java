@@ -1,9 +1,10 @@
 package org.sam.store.common.repository;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import org.springframework.data.annotation.CreatedDate;
-import org.springframework.data.annotation.LastModifiedDate;
+
+import org.sam.store.common.repository.annotation.CreatedDate;
+import org.sam.store.common.repository.annotation.Entity;
+import org.sam.store.common.repository.annotation.Id;
+import org.sam.store.common.repository.annotation.UpdatedDate;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
@@ -18,7 +19,7 @@ public class DummyItem {
     @CreatedDate
     private LocalDateTime createdAt;
 
-    @LastModifiedDate
+    @UpdatedDate
     private LocalDateTime updatedAt;
 
     protected DummyItem() {}

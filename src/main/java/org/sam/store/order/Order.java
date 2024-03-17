@@ -1,29 +1,28 @@
 package org.sam.store.order;
 
-import jakarta.persistence.*;
 import lombok.Getter;
 import org.sam.store.common.BaseEntity;
 import org.sam.store.common.constant.OrderStatus;
 import org.sam.store.common.exception.ProductNotFoundException;
+import org.sam.store.common.repository.annotation.Column;
+import org.sam.store.common.repository.annotation.Entity;
+import org.sam.store.common.repository.annotation.Id;
 import org.sam.store.product.Product;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-@Entity
 @Getter
-@Table(name = "orders")
+@Entity
 public class Order extends BaseEntity {
 
     @Id
     private Long id;
 
     @Column
-    @Enumerated(EnumType.STRING)
     private OrderStatus status;
 
-    @OneToMany
     private final List<OrderProduct> orderProducts = new ArrayList<>();
 
     @Column

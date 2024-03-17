@@ -1,13 +1,13 @@
 package org.sam.store.payment;
 
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.sam.store.common.BaseEntity;
+import org.sam.store.common.repository.annotation.Column;
+import org.sam.store.common.repository.annotation.Entity;
+import org.sam.store.common.repository.annotation.Id;
 
 @Entity
 @Getter

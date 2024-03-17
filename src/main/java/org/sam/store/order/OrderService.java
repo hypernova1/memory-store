@@ -6,7 +6,6 @@ import org.sam.store.product.Product;
 import org.sam.store.product.ProductQuantityInfo;
 import org.sam.store.product.ProductService;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -31,7 +30,6 @@ public class OrderService {
         this.orderRepository.save(order);
     }
 
-    @Transactional
     public void cancel(Long id) {
         Order order = this.orderRepository.findOne(id)
                 .orElseThrow(OrderNotFoundException::new);

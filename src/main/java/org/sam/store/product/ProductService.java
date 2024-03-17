@@ -4,7 +4,6 @@ import lombok.AllArgsConstructor;
 import org.sam.store.common.exception.ProductNotFoundException;
 import org.sam.store.common.lock.LockManager;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -12,7 +11,6 @@ import java.util.stream.Collectors;
 
 @Service
 @AllArgsConstructor
-@Transactional(readOnly = true)
 public class ProductService {
 
     private final ProductRepository productRepository;
@@ -31,7 +29,6 @@ public class ProductService {
         return this.productRepository.findByIds(productIds);
     }
 
-    @Transactional
     public List<Product> decreaseProductsQuantity(List<ProductQuantityInfo> productQuantityInfos) {
         String lockKey = "product_quantity";
         lockManager.acquire(lockKey);
@@ -48,7 +45,6 @@ public class ProductService {
         return products;
     }
 
-    @Transactional
     public List<Product> increaseProductsQuantity(List<ProductQuantityInfo> productQuantityInfos) {
         String lockKey = "product_quantity";
         lockManager.acquire(lockKey);
