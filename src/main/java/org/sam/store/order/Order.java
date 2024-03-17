@@ -23,7 +23,6 @@ public class Order extends BaseEntity {
     @Enumerated(EnumType.STRING)
     private OrderStatus status;
 
-
     @OneToMany
     private final List<OrderProduct> orderProducts = new ArrayList<>();
 

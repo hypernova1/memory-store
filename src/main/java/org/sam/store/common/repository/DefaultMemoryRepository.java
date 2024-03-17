@@ -1,9 +1,12 @@
 package org.sam.store.common.repository;
 
 import jakarta.persistence.Id;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedDate;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -14,6 +17,7 @@ public abstract class DefaultMemoryRepository<T, U> implements Repository<T, U> 
 
     @Override
     public T save(T t) {
+        LocalDateTime now = LocalDateTime.now();
         U inputItemId = this.getId(t);
         if (inputItemId == null) {
             throw new IdNotExistException();
@@ -21,11 +25,14 @@ public abstract class DefaultMemoryRepository<T, U> implements Repository<T, U> 
         for (int i = 0; i < this.items.size(); i++) {
             U itemId = this.getId(items.get(i));
             if (itemId.equals(inputItemId)) {
+                this.setUpdatedAt(t, now);
                 this.items.set(i, t);
                 return t;
             }
         }
 
+        this.setUpdatedAt(t, now);
+        this.setCreatedAt(t, now);
         this.items.add(t);
         return t;
     }
@@ -71,19 +78,57 @@ public abstract class DefaultMemoryRepository<T, U> implements Repository<T, U> 
     }
 
     protected U getId(T t) {
+        return (U) getFieldValueByAnnotationType(t, Id.class);
+    }
+
+    private void setUpdatedAt(T t, LocalDateTime now) {
+        Field lastMofifiedDateField = this.getPropertyField(t, LastModifiedDate.class);
+        if (lastMofifiedDateField != null) {
+            this.setValue(t, now, LastModifiedDate.class);
+        }
+    }
+
+    private void setCreatedAt(T t, LocalDateTime now) {
+        Field lastMofifiedDateField = this.getPropertyField(t, CreatedDate.class);
+        if (lastMofifiedDateField != null) {
+            this.setValue(t, now, CreatedDate.class);
+        }
+    }
+
+    protected void setValue(T t, Object value, Class<? extends Annotation> annotationClass) {
+        Field field = this.getPropertyField(t, annotationClass);
+        field.setAccessible(true);
+        try {
+            field.set(t, value);
+        } catch (IllegalAccessException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private Object getFieldValueByAnnotationType(T t, Class<? extends Annotation> annotationClass) {
+        Field field = this.getPropertyField(t, annotationClass);
+        try {
+            field.setAccessible(true);
+            return field.get(t);
+        } catch (NullPointerException | IllegalAccessException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private Field getPropertyField(T t, Class<? extends Annotation> annotationClass) {
         Class<?> clazz = t.getClass();
         Field[] fields = clazz.getDeclaredFields();
 
         for (Field field : fields) {
             try {
-                Annotation annotation = field.getAnnotation(Id.class);
+                Annotation annotation = field.getAnnotation(annotationClass);
                 if (annotation == null) {
                     continue;
                 }
 
                 field.setAccessible(true);
-                return (U) field.get(t);
-            } catch (NullPointerException | IllegalAccessException e) {
+                return field;
+            } catch (NullPointerException e) {
                 throw new RuntimeException(e);
             }
         }

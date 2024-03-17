@@ -66,4 +66,12 @@ class DefaultMemoryRepositoryTest {
         assertThat(defaultMemoryRepository.getId(item)).isEqualTo(id);
     }
 
+    @Test
+    void test_created_at_and_updated_at() {
+        DummyItem item = DummyItem.create();
+        this.defaultMemoryRepository.save(item);
+        assertThat(item.getCreatedAt()).isNotNull();
+        assertThat(item.getUpdatedAt()).isNotNull();
+    }
+
 }

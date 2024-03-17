@@ -13,10 +13,8 @@ import java.util.stream.Collectors;
 @Repository
 public class MemoryProductRepository extends DefaultMemoryRepository<Product, String> implements ProductRepository {
 
-    private final List<Product> items;
-
     {
-        this.items = CsvUtil.createInstance("test_data.csv", Product.class);
+        super.items.addAll(CsvUtil.createInstance("test_data.csv", Product.class));
     }
 
     @Override
