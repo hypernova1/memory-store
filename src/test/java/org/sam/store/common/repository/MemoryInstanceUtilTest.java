@@ -11,6 +11,15 @@ import static org.junit.jupiter.api.Assertions.*;
 class MemoryInstanceUtilTest {
 
     @Test
+    void is_entity() {
+        DummyItem entityItem = new DummyItem();
+        Object obj = "No Entity!!";
+
+        assertThat(MemoryInstanceUtil.isEntity(entityItem)).isTrue();
+        assertThat(MemoryInstanceUtil.isEntity(obj)).isFalse();
+    }
+
+    @Test
     void find_id() {
         DummyItem item = DummyItem.createEmptyInstance();
         String id = UUID.randomUUID().toString();

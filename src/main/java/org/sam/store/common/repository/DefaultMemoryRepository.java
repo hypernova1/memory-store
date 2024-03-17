@@ -11,6 +11,10 @@ public abstract class DefaultMemoryRepository<T, U> implements Repository<T, U> 
 
     @Override
     public T save(T t) {
+        if (!MemoryInstanceUtil.isEntity(t)) {
+            throw new NoEntityException();
+        }
+
         LocalDateTime now = LocalDateTime.now();
         U inputItemId = MemoryInstanceUtil.getId(t);
         if (inputItemId == null) {

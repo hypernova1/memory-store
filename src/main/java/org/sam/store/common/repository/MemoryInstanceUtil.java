@@ -1,5 +1,6 @@
 package org.sam.store.common.repository;
 
+import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
@@ -9,6 +10,11 @@ import java.lang.reflect.Field;
 import java.time.LocalDateTime;
 
 public class MemoryInstanceUtil {
+
+    protected static <T> boolean isEntity(T t) {
+        Annotation annotation = t.getClass().getAnnotation(Entity.class);
+        return annotation != null;
+    }
 
     @SuppressWarnings("unchecked")
     protected static  <T, U> U getId(T t) {
