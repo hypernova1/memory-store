@@ -1,9 +1,14 @@
 package org.sam.store.common.repository;
 
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.sam.store.common.repository.exception.IdNotExistException;
+import org.sam.store.order.OrderRepository;
+import org.sam.store.product.Product;
+import org.sam.store.product.ProductRepository;
 
+import java.lang.reflect.Proxy;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -57,6 +62,31 @@ class DefaultMemoryRepositoryTest {
 
         assertThat(defaultMemoryRepository.findById(id).isPresent()).isTrue();
         assertThat(defaultMemoryRepository.findById(id).get()).isEqualTo(item);
+    }
+
+    @Test
+    void proxy_instance() {
+        ProxyRepository<Product, String> defaultMemoryRepository = new ProxyRepository<>();
+        ProductRepository productRepository = (ProductRepository) Proxy.newProxyInstance(
+                Repository.class.getClassLoader(),
+                new Class[] {ProductRepository.class},
+                defaultMemoryRepository
+        );
+
+        ProxyRepository<Order, String> defaultMemoryRepository2 = new ProxyRepository<>();
+        OrderRepository orderRepository = (OrderRepository) Proxy.newProxyInstance(
+                Repository.class.getClassLoader(),
+                new Class[] {OrderRepository.class},
+                defaultMemoryRepository2
+        );
+
+        Product product = new Product();
+        productRepository.save(product);
+
+        assertThat(productRepository.findAll().size()).isEqualTo(1);
+        assertThat(orderRepository.findAll().size()).isEqualTo(0);
+
+        System.out.println(productRepository.findByIds(new ArrayList<>()));
     }
 
 }

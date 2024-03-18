@@ -38,4 +38,5 @@ class MemoryInstanceUtilTest {
         assertThat(item.getCreatedAt()).isEqualTo(now);
         assertThat(item.getUpdatedAt()).isEqualTo(now);
     }
+
 }
