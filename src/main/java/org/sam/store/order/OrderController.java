@@ -16,7 +16,7 @@ public class OrderController {
     }
 
     @PatchMapping("/{id}/cancel")
-    public void cancel(@PathVariable Long id) {
+    public void cancel(@PathVariable String id) {
         this.orderService.cancel(id);
     }
 

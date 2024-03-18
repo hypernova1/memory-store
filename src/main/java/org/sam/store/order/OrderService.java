@@ -30,8 +30,8 @@ public class OrderService {
         this.orderRepository.save(order);
     }
 
-    public void cancel(Long id) {
-        Order order = this.orderRepository.findOne(id)
+    public void cancel(String id) {
+        Order order = this.orderRepository.findById(id)
                 .orElseThrow(OrderNotFoundException::new);
         order.cancel();
 

@@ -5,5 +5,4 @@ import org.sam.store.common.repository.Repository;
 import java.util.Optional;
 
 public interface OrderRepository extends Repository<Order, String> {
-    Optional<Order> findOne(Long id);
 }

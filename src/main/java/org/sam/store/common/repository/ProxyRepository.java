@@ -11,12 +11,13 @@ public class ProxyRepository<T, U> implements InvocationHandler {
     }
 
     @Override
-    public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
+    public Object invoke(Object proxy, Method method, Object[] args) {
         try {
             Object result = method.invoke(repository, args);
             return result;
         } catch (Exception e) {
             //TODO: 메서드 쿼리 구현
+            System.out.println(method.getName());
         }
         return null;
     }
