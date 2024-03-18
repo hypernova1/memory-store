@@ -2,6 +2,7 @@ package org.sam.store.common.repository;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
+import org.sam.store.common.repository.exception.IdNotExistException;
 
 import java.util.ArrayList;
 import java.util.List;

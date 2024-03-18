@@ -1,7 +1,5 @@
 package org.sam.store.common.repository;
 
-import org.sam.store.product.Product;
-
 import java.util.List;
 import java.util.Optional;
 

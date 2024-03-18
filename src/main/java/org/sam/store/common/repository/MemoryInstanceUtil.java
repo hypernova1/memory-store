@@ -4,6 +4,8 @@ import org.sam.store.common.repository.annotation.CreatedDate;
 import org.sam.store.common.repository.annotation.Entity;
 import org.sam.store.common.repository.annotation.Id;
 import org.sam.store.common.repository.annotation.UpdatedDate;
+import org.sam.store.common.repository.exception.EntityPropertyNotFoundException;
+import org.sam.store.common.repository.exception.IdTypeNotMatchException;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;

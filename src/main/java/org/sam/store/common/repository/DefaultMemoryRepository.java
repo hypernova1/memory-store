@@ -1,12 +1,15 @@
 package org.sam.store.common.repository;
 
+import org.sam.store.common.repository.exception.IdNotExistException;
+import org.sam.store.common.repository.exception.NoEntityException;
+
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-public abstract class DefaultMemoryRepository<T, U> implements Repository<T, U> {
+public class DefaultMemoryRepository<T, U> implements Repository<T, U> {
     protected final List<T> items = new ArrayList<>();
 
     @Override
