@@ -25,15 +25,11 @@ public class ProductService {
                 .orElseThrow(ProductNotFoundException::new);
     }
 
-    public List<Product> findByIds(List<String> productIds) {
-        return this.productRepository.findByIds(productIds);
-    }
-
     public List<Product> decreaseProductsQuantity(List<ProductQuantityInfo> productQuantityInfos) {
-        String lockKey = "product_quantity";
-        lockManager.acquire(lockKey);
-
         List<String> productIds = productQuantityInfos.stream().map(ProductQuantityInfo::getProductId).collect(Collectors.toCollection(ArrayList::new));
+
+        List<String> lockKeys = this.acquireQuantityLocks(productIds);
+
         List<Product> products = this.productRepository.findByIds(productIds);
 
         products.forEach((product) -> {
@@ -41,24 +37,38 @@ public class ProductService {
             product.decreaseQuantity(quantity);
         });
 
-        lockManager.release(lockKey);
+        this.releaseQuantityLocks(lockKeys);
         return products;
     }
 
     public List<Product> increaseProductsQuantity(List<ProductQuantityInfo> productQuantityInfos) {
-        String lockKey = "product_quantity";
-        lockManager.acquire(lockKey);
-
         List<String> productIds = productQuantityInfos.stream().map(ProductQuantityInfo::getProductId).collect(Collectors.toCollection(ArrayList::new));
-        List<Product> products = this.productRepository.findByIds(productIds);
+        List<String> lockKeys = this.acquireQuantityLocks(productIds);
 
+        List<Product> products = this.productRepository.findByIds(productIds);
         products.forEach((product) -> {
             int quantity = productQuantityInfos.stream().filter((pq) -> pq.getProductId().equals(product.getId())).findFirst().get().getQuantity();
             product.increaseQuantity(quantity);
         });
 
-        lockManager.release(lockKey);
+        this.releaseQuantityLocks(lockKeys);
         return products;
+    }
+
+    private List<String> acquireQuantityLocks(List<String> ids) {
+        List<String> lockKeys = new ArrayList<>();
+        for (String id : ids) {
+            String lockKey = "product_quantity_" + id;
+            lockManager.acquire(lockKey);
+            lockKeys.add(lockKey);
+        }
+        return lockKeys;
+    }
+
+    private void releaseQuantityLocks(List<String> lockKeys) {
+        for (String lockKey : lockKeys) {
+            lockManager.release(lockKey);
+        }
     }
 
 }

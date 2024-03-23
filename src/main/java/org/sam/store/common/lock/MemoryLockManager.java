@@ -43,6 +43,10 @@ public class MemoryLockManager implements LockManager {
         this.locks.add(lock);
     }
 
+    public void set(String id, long additionalNanoTime, List<String> ids) {
+
+    }
+
     @Override
     public void release(String id) {
         Lock lock = findLock(id)
