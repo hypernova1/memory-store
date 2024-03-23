@@ -5,6 +5,7 @@ import org.sam.store.common.repository.exception.NoEntityException;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -58,6 +59,21 @@ public class DefaultMemoryRepository<T, U> implements Repository<T, U> {
     @Override
     public List<T> findAll() {
         return items;
+    }
+
+    @Override
+    public List<T> find(int page, int size) {
+        int first = (page - 1) * size;
+        int last = first + size;
+
+        if (first > items.size()) {
+            return Collections.emptyList();
+        }
+
+        if (last > items.size()) {
+            last = items.size();
+        }
+        return this.items.subList(first, last);
     }
 
     @Override

@@ -7,6 +7,7 @@ public interface Repository<T, U> {
     T save(T t);
     List<T> save(List<T> list);
     List<T> findAll();
+    List<T> find(int page, int size);
     Optional<T> findById(U id);
     void delete(T t);
     void delete(List<T> list);

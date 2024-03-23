@@ -17,7 +17,7 @@ public class ProductService {
     private final LockManager lockManager;
 
     public List<Product> getProducts(int page, int size) {
-        return this.productRepository.findAll();
+        return this.productRepository.find(page, size);
     }
 
     public Product getProduct(String id) {
