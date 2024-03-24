@@ -9,7 +9,7 @@ import java.util.*;
 public class MemoryLockManager implements LockManager {
 
     private static final long DEFAULT_ADDITIONAL_NANO_TIME = 1000 * 60L;
-    private final List<Lock> locks = Collections.synchronizedList(new ArrayList<>());
+    final List<Lock> locks = Collections.synchronizedList(new ArrayList<>());
 
     @Override
     public synchronized void acquire(String id) {
@@ -27,7 +27,6 @@ public class MemoryLockManager implements LockManager {
 
     @Override
     public void set(String id) {
-        System.out.println("set lock");
         this.set(id, DEFAULT_ADDITIONAL_NANO_TIME);
     }
 
@@ -44,7 +43,6 @@ public class MemoryLockManager implements LockManager {
     @Override
     public void release(String id) {
         synchronized (locks) {
-            System.out.println("release lock");
             Iterator<Lock> iterator = locks.iterator();
             while (iterator.hasNext()) {
                 Lock nextLock = iterator.next();

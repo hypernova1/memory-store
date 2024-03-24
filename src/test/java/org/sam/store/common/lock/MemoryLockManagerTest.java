@@ -58,21 +58,23 @@ class MemoryLockManagerTest {
 
     @Test
     void race_condition() throws InterruptedException {
+        int numberOfIteration = 1000000;
+
         Counter counter = new Counter();
         Thread t1 = new Thread(() -> {
-            for (int i = 0; i < 1000; i++) {
+            for (int i = 0; i < numberOfIteration; i++) {
                 counter.increase();
             }
         });
 
         Thread t2 = new Thread(() -> {
-            for (int i = 0; i < 1000; i++) {
+            for (int i = 0; i < numberOfIteration; i++) {
                 counter.increase();
             }
         });
 
         Thread t3 = new Thread(() -> {
-            for (int i = 0; i < 1000; i++) {
+            for (int i = 0; i < numberOfIteration; i++) {
                 counter.increase();
             }
         });
@@ -85,35 +87,38 @@ class MemoryLockManagerTest {
         t2.join();
         t3.join();
 
-        assertThat(counter.getCount()).isNotEqualTo(3000);
+        System.out.println(counter.getCount());
+        assertThat(counter.getCount()).isNotEqualTo(3 * numberOfIteration);
     }
 
+    //TODO: 락을 걸지 않고 실행했을 때보다 오차는 확연히 줄었지만, 정확하게 카운트 되지 않음
     @Test
     void concurrency_test() throws InterruptedException {
+        int numberOfIteration = 1000000;
 
         Counter counter = new Counter();
 
         Thread t1 = new Thread(() -> {
-            for (int i = 0; i < 1000; i++) {
-                memoryLockManager.acquire("lock");
+            for (int i = 0; i < numberOfIteration; i++) {
+                memoryLockManager.acquire(DEFAULT_KEY);
                 counter.increase();
-                memoryLockManager.release("lock");
+                memoryLockManager.release(DEFAULT_KEY);
             }
         });
 
         Thread t2 = new Thread(() -> {
-            for (int i = 0; i < 1000; i++) {
-                memoryLockManager.acquire("lock");
+            for (int i = 0; i < numberOfIteration; i++) {
+                memoryLockManager.acquire(DEFAULT_KEY);
                 counter.increase();
-                memoryLockManager.release("lock");
+                memoryLockManager.release(DEFAULT_KEY);
             }
         });
 
         Thread t3 = new Thread(() -> {
-            for (int i = 0; i < 1000; i++) {
-                memoryLockManager.acquire("lock");
+            for (int i = 0; i < numberOfIteration; i++) {
+                memoryLockManager.acquire(DEFAULT_KEY);
                 counter.increase();
-                memoryLockManager.release("lock");
+                memoryLockManager.release(DEFAULT_KEY);
             }
         });
 
@@ -125,7 +130,8 @@ class MemoryLockManagerTest {
         t2.join();
         t3.join();
 
-        assertThat(counter.getCount()).isEqualTo(3000);
+        System.out.println(counter.getCount());
+        assertThat(counter.getCount()).isEqualTo(3 * numberOfIteration);
     }
 
 }
