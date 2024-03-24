@@ -3,14 +3,12 @@ package org.sam.store.common.lock;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.sam.store.common.repository.Counter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.time.LocalDateTime;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
@@ -58,38 +56,76 @@ class MemoryLockManagerTest {
         assertThat(beforeExpiredTime.isBefore(afterExpiredTime)).isTrue();
     }
 
-    private static int value = 0;
-    private static final int iterateCount = 999;
+    @Test
+    void race_condition() throws InterruptedException {
+        Counter counter = new Counter();
+        Thread t1 = new Thread(() -> {
+            for (int i = 0; i < 1000; i++) {
+                counter.increase();
+            }
+        });
+
+        Thread t2 = new Thread(() -> {
+            for (int i = 0; i < 1000; i++) {
+                counter.increase();
+            }
+        });
+
+        Thread t3 = new Thread(() -> {
+            for (int i = 0; i < 1000; i++) {
+                counter.increase();
+            }
+        });
+
+        t1.start();
+        t2.start();
+        t3.start();
+
+        t1.join();
+        t2.join();
+        t3.join();
+
+        assertThat(counter.getCount()).isNotEqualTo(3000);
+    }
 
     @Test
     void concurrency_test() throws InterruptedException {
-        int numThreads = 50;
-        ExecutorService executorService = Executors.newFixedThreadPool(numThreads);
-        CountDownLatch latch = new CountDownLatch(numThreads);
 
-        for (int i = 0; i < numThreads; i++) {
-            int finalI = i;
-            executorService.execute(() -> {
-                String threadName = "thread-" + finalI;
-                System.out.println("================== start thread - " + threadName);
+        Counter counter = new Counter();
+
+        Thread t1 = new Thread(() -> {
+            for (int i = 0; i < 1000; i++) {
                 memoryLockManager.acquire("lock");
-                System.out.println("start func - " + threadName);
-                func();
-                System.out.println("finish func - " + threadName);
+                counter.increase();
                 memoryLockManager.release("lock");
-                latch.countDown();
-                System.out.println("=================== finish " + threadName);
-            });
-        }
+            }
+        });
 
-        latch.await();
-        assertThat(value).isEqualTo(numThreads * iterateCount);
-    }
+        Thread t2 = new Thread(() -> {
+            for (int i = 0; i < 1000; i++) {
+                memoryLockManager.acquire("lock");
+                counter.increase();
+                memoryLockManager.release("lock");
+            }
+        });
 
-    void func() {
-        for (int i = 0; i < iterateCount; i++) {
-            value++;
-        }
+        Thread t3 = new Thread(() -> {
+            for (int i = 0; i < 1000; i++) {
+                memoryLockManager.acquire("lock");
+                counter.increase();
+                memoryLockManager.release("lock");
+            }
+        });
+
+        t1.start();
+        t2.start();
+        t3.start();
+
+        t1.join();
+        t2.join();
+        t3.join();
+
+        assertThat(counter.getCount()).isEqualTo(3000);
     }
 
 }
