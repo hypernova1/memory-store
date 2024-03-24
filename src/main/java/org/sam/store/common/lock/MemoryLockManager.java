@@ -42,7 +42,7 @@ public class MemoryLockManager implements LockManager {
     }
 
     @Override
-    public synchronized void release(String id) {
+    public void release(String id) {
         synchronized (locks) {
             System.out.println("release lock");
             Iterator<Lock> iterator = locks.iterator();
@@ -63,7 +63,7 @@ public class MemoryLockManager implements LockManager {
     }
 
     @Override
-    public synchronized boolean exists(String id) {
+    public boolean exists(String id) {
         synchronized (locks) {
             Optional<Lock> lock = this.locks.stream().filter((l) -> l.getId().equals(id)).findFirst();
             if (lock.isEmpty()) {
