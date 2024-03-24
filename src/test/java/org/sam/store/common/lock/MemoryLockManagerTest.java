@@ -8,6 +8,9 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.time.LocalDateTime;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
@@ -55,9 +58,38 @@ class MemoryLockManagerTest {
         assertThat(beforeExpiredTime.isBefore(afterExpiredTime)).isTrue();
     }
 
-    @Test
-    void test_set_or_wait() {
+    private static int value = 0;
+    private static final int iterateCount = 999;
 
+    @Test
+    void concurrency_test() throws InterruptedException {
+        int numThreads = 50;
+        ExecutorService executorService = Executors.newFixedThreadPool(numThreads);
+        CountDownLatch latch = new CountDownLatch(numThreads);
+
+        for (int i = 0; i < numThreads; i++) {
+            int finalI = i;
+            executorService.execute(() -> {
+                String threadName = "thread-" + finalI;
+                System.out.println("================== start thread - " + threadName);
+                memoryLockManager.acquire("lock");
+                System.out.println("start func - " + threadName);
+                func();
+                System.out.println("finish func - " + threadName);
+                memoryLockManager.release("lock");
+                latch.countDown();
+                System.out.println("=================== finish " + threadName);
+            });
+        }
+
+        latch.await();
+        assertThat(value).isEqualTo(numThreads * iterateCount);
+    }
+
+    void func() {
+        for (int i = 0; i < iterateCount; i++) {
+            value++;
+        }
     }
 
 }

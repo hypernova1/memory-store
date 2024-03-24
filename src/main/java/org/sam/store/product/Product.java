@@ -21,13 +21,18 @@ public class Product extends BaseEntity {
     private String name;
 
     @Column
-    private double price;
+    private double price = 0;
 
     @Column
     private int quantity;
 
     public Product() {
         this.id = UUID.randomUUID().toString();
+    }
+
+    public Product(int quantity) {
+        this();
+        this.quantity = quantity;
     }
 
     public void decreaseQuantity(int quantity) {
