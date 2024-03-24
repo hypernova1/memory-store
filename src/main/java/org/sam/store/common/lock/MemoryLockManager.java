@@ -8,8 +8,8 @@ import java.util.*;
 @Component
 public class MemoryLockManager implements LockManager {
 
-    private static final long DEFAULT_ADDITIONAL_NANO_TIME = 1000 * 60L;
-    final List<Lock> locks = Collections.synchronizedList(new ArrayList<>());
+    private static final long DEFAULT_ADDITIONAL_MILLISECONDS = 1000 * 60L;
+    private final List<Lock> locks = Collections.synchronizedList(new ArrayList<>());
 
     @Override
     public synchronized void acquire(String id) {
@@ -27,15 +27,15 @@ public class MemoryLockManager implements LockManager {
 
     @Override
     public void set(String id) {
-        this.set(id, DEFAULT_ADDITIONAL_NANO_TIME);
+        this.set(id, DEFAULT_ADDITIONAL_MILLISECONDS);
     }
 
-    public void set(String id, long additionalNanoTime) {
+    public void set(String id, long additionalMilliSeconds) {
         synchronized (locks) {
             if (exists(id)) {
                 throw new AlreadyLockException();
             }
-            Lock lock = new Lock(id, additionalNanoTime);
+            Lock lock = new Lock(id, additionalMilliSeconds);
             locks.add(lock);
         }
     }
@@ -63,7 +63,7 @@ public class MemoryLockManager implements LockManager {
     @Override
     public boolean exists(String id) {
         synchronized (locks) {
-            Optional<Lock> lock = this.locks.stream().filter((l) -> l.getId().equals(id)).findFirst();
+            Optional<Lock> lock = this.findLock(id);
             if (lock.isEmpty()) {
                 return false;
             }
@@ -75,14 +75,14 @@ public class MemoryLockManager implements LockManager {
         }
     }
 
+    public Lock get(String id) {
+        return this.findLock(id).orElseThrow(NoLockException::new);
+    }
+
     private Optional<Lock> findLock(String id) {
         synchronized (locks) {
             return this.locks.stream().filter((l) -> l.getId().equals(id)).findFirst();
         }
-    }
-
-    synchronized public Lock get(String id) {
-        return this.findLock(id).orElseThrow(NoLockException::new);
     }
 
 }
