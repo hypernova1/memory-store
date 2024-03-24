@@ -16,40 +16,40 @@ import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 @SpringBootTest
 @ExtendWith(SpringExtension.class)
 class MemoryLockManagerTest {
-    protected static final String DEFAULT_KEY = "melchor";
+    protected static final String LOCK_KEY = "melchor";
 
     @Autowired
     protected MemoryLockManager memoryLockManager;
 
     @AfterEach
     void release() {
-        if (memoryLockManager.exists(DEFAULT_KEY)) {
-            memoryLockManager.release(DEFAULT_KEY);
+        if (memoryLockManager.exists(LOCK_KEY)) {
+            memoryLockManager.release(LOCK_KEY);
         }
     }
 
     @Test
     void test_denied_duplication_key() {
-        memoryLockManager.set(DEFAULT_KEY);
+        memoryLockManager.set(LOCK_KEY);
         assertThatExceptionOfType(AlreadyLockException.class)
-                .isThrownBy(() -> memoryLockManager.set(DEFAULT_KEY));
+                .isThrownBy(() -> memoryLockManager.set(LOCK_KEY));
     }
 
     @Test
     void test_release() {
-        memoryLockManager.set(DEFAULT_KEY);
-        memoryLockManager.release(DEFAULT_KEY);
+        memoryLockManager.set(LOCK_KEY);
+        memoryLockManager.release(LOCK_KEY);
 
-        assertDoesNotThrow(() -> memoryLockManager.set(DEFAULT_KEY));
+        assertDoesNotThrow(() -> memoryLockManager.set(LOCK_KEY));
     }
 
     @Test
     void test_extend_time() {
-        memoryLockManager.set(DEFAULT_KEY);
-        Lock lock = memoryLockManager.get(DEFAULT_KEY);
+        memoryLockManager.set(LOCK_KEY);
+        Lock lock = memoryLockManager.get(LOCK_KEY);
         LocalDateTime beforeExpiredTime = lock.getExpiredTime();
 
-        memoryLockManager.extendsTime(DEFAULT_KEY, 1000 * 60);
+        memoryLockManager.extendsTime(LOCK_KEY, 1000 * 60);
         LocalDateTime afterExpiredTime = lock.getExpiredTime();
 
         assertThat(beforeExpiredTime.isBefore(afterExpiredTime)).isTrue();

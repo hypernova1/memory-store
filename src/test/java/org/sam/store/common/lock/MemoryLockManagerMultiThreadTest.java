@@ -8,25 +8,26 @@ import java.util.concurrent.atomic.AtomicInteger;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class MemoryLockManagerMultiThreadTest extends MemoryLockManagerTest {
+
+    private static final int LOOP_COUNT = 1000000;
+
     @Test
     void race_condition() throws InterruptedException {
-        int numberOfIteration = 1000000;
-
         Counter counter = new Counter();
         Thread t1 = new Thread(() -> {
-            for (int i = 0; i < numberOfIteration; i++) {
+            for (int i = 0; i < LOOP_COUNT; i++) {
                 counter.increase();
             }
         });
 
         Thread t2 = new Thread(() -> {
-            for (int i = 0; i < numberOfIteration; i++) {
+            for (int i = 0; i < LOOP_COUNT; i++) {
                 counter.increase();
             }
         });
 
         Thread t3 = new Thread(() -> {
-            for (int i = 0; i < numberOfIteration; i++) {
+            for (int i = 0; i < LOOP_COUNT; i++) {
                 counter.increase();
             }
         });
@@ -39,38 +40,34 @@ public class MemoryLockManagerMultiThreadTest extends MemoryLockManagerTest {
         t2.join();
         t3.join();
 
-        System.out.println(counter.getCount());
-        assertThat(counter.getCount()).isNotEqualTo(3 * numberOfIteration);
+        assertThat(counter.getCount()).isNotEqualTo(3 * LOOP_COUNT);
     }
 
-    //TODO: 락을 걸지 않고 실행했을 때보다 오차는 확연히 줄었지만, 정확하게 카운트 되지 않음
     @Test
     void concurrency_test() throws InterruptedException {
-        int numberOfIteration = 1000000;
-
         Counter counter = new Counter();
 
         Thread t1 = new Thread(() -> {
-            for (int i = 0; i < numberOfIteration; i++) {
-                memoryLockManager.acquire(DEFAULT_KEY);
+            for (int i = 0; i < LOOP_COUNT; i++) {
+                memoryLockManager.acquire(LOCK_KEY);
                 counter.increase();
-                memoryLockManager.release(DEFAULT_KEY);
+                memoryLockManager.release(LOCK_KEY);
             }
         });
 
         Thread t2 = new Thread(() -> {
-            for (int i = 0; i < numberOfIteration; i++) {
-                memoryLockManager.acquire(DEFAULT_KEY);
+            for (int i = 0; i < LOOP_COUNT; i++) {
+                memoryLockManager.acquire(LOCK_KEY);
                 counter.increase();
-                memoryLockManager.release(DEFAULT_KEY);
+                memoryLockManager.release(LOCK_KEY);
             }
         });
 
         Thread t3 = new Thread(() -> {
-            for (int i = 0; i < numberOfIteration; i++) {
-                memoryLockManager.acquire(DEFAULT_KEY);
+            for (int i = 0; i < LOOP_COUNT; i++) {
+                memoryLockManager.acquire(LOCK_KEY);
                 counter.increase();
-                memoryLockManager.release(DEFAULT_KEY);
+                memoryLockManager.release(LOCK_KEY);
             }
         });
 
@@ -82,13 +79,11 @@ public class MemoryLockManagerMultiThreadTest extends MemoryLockManagerTest {
         t2.join();
         t3.join();
 
-        System.out.println(counter.getCount());
-        assertThat(counter.getCount()).isEqualTo(3 * numberOfIteration);
+        assertThat(counter.getCount()).isEqualTo(3 * LOOP_COUNT);
     }
 
     @Test
     void call_count() throws InterruptedException {
-
         class TestMemoryLockManager extends MemoryLockManager {
             public final AtomicInteger setCallCount = new AtomicInteger(0);
             public final AtomicInteger releaseCallCount = new AtomicInteger(0);
@@ -103,7 +98,6 @@ public class MemoryLockManagerMultiThreadTest extends MemoryLockManagerTest {
             public void release(String id) {
                 super.release(id);
                 this.releaseCallCount.incrementAndGet();
-
             }
 
             public int getSetCallCount() {
@@ -117,31 +111,29 @@ public class MemoryLockManagerMultiThreadTest extends MemoryLockManagerTest {
 
         TestMemoryLockManager lockManager = new TestMemoryLockManager();
 
-        int numberOfIteration = 1000000;
-
         Counter counter = new Counter();
 
         Thread t1 = new Thread(() -> {
-            for (int i = 0; i < numberOfIteration; i++) {
-                lockManager.acquire(DEFAULT_KEY);
+            for (int i = 0; i < LOOP_COUNT; i++) {
+                lockManager.acquire(LOCK_KEY);
                 counter.increase();
-                lockManager.release(DEFAULT_KEY);
+                lockManager.release(LOCK_KEY);
             }
         });
 
         Thread t2 = new Thread(() -> {
-            for (int i = 0; i < numberOfIteration; i++) {
-                lockManager.acquire(DEFAULT_KEY);
+            for (int i = 0; i < LOOP_COUNT; i++) {
+                lockManager.acquire(LOCK_KEY);
                 counter.increase();
-                lockManager.release(DEFAULT_KEY);
+                lockManager.release(LOCK_KEY);
             }
         });
 
         Thread t3 = new Thread(() -> {
-            for (int i = 0; i < numberOfIteration; i++) {
-                lockManager.acquire(DEFAULT_KEY);
+            for (int i = 0; i < LOOP_COUNT; i++) {
+                lockManager.acquire(LOCK_KEY);
                 counter.increase();
-                lockManager.release(DEFAULT_KEY);
+                lockManager.release(LOCK_KEY);
             }
         });
 
@@ -153,7 +145,7 @@ public class MemoryLockManagerMultiThreadTest extends MemoryLockManagerTest {
         t2.join();
         t3.join();
 
-        assertThat(lockManager.getSetCallCount()).isEqualTo(3 * numberOfIteration);
-        assertThat(lockManager.getReleaseCallCount()).isEqualTo(3 * numberOfIteration);
+        assertThat(lockManager.getSetCallCount()).isEqualTo(3 * LOOP_COUNT);
+        assertThat(lockManager.getReleaseCallCount()).isEqualTo(3 * LOOP_COUNT);
     }
 }
