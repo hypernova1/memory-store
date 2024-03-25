@@ -1,4 +1,4 @@
-package org.sam.store.common.repository;
+package org.sam.store.common.lock;
 
 public class Counter {
 
