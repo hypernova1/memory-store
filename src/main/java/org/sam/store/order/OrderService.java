@@ -23,7 +23,7 @@ public class OrderService {
                 .stream()
                 .map((product) -> new ProductQuantityInfo(product.getProductId(), product.getQuantity()))
                 .collect(Collectors.toCollection(ArrayList::new));
-
+        
         List<Product> products = productService.decreaseProductsQuantity(productQuantityInfos);
 
         Order order = Order.create(orderForm, products);

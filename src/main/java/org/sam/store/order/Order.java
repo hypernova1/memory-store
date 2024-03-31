@@ -1,6 +1,8 @@
 package org.sam.store.order;
 
+import lombok.AccessLevel;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import org.sam.store.common.BaseEntity;
 import org.sam.store.common.constant.OrderStatus;
 import org.sam.store.common.exception.ProductNotFoundException;
@@ -15,6 +17,7 @@ import java.util.List;
 
 @Getter
 @Entity
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Order extends BaseEntity {
 
     @Id
@@ -30,16 +33,23 @@ public class Order extends BaseEntity {
 
     public static Order create(OrderForm orderForm, List<Product> products) {
         Order order = new Order();
-        for (OrderProductDto orderProductDto : orderForm.getProducts()) {
-            Product product = products.stream().filter((p) -> p.getId().equals(orderProductDto.getProductId())).findFirst()
-                    .orElseThrow(ProductNotFoundException::new);
-            order.addProduct(product, orderProductDto.getQuantity());
-        }
+        order.addOrderProducts(orderForm, products);
+        order.verifyOrderProducts();
         return order;
     }
 
-    public void addProduct(Product product, int quantity) {
-        this.orderProducts.add(OrderProduct.of(product, quantity));
+    private void addOrderProducts(OrderForm orderForm, List<Product> products) {
+        for (OrderProductDto orderProductDto : orderForm.getProducts()) {
+            Product product = products.stream().filter((p) -> p.getId().equals(orderProductDto.getProductId())).findFirst()
+                    .orElseThrow(ProductNotFoundException::new);
+            this.orderProducts.add(OrderProduct.of(product, orderProductDto.getQuantity()));
+        }
+    }
+
+    private void verifyOrderProducts() {
+        if (this.orderProducts.isEmpty()) {
+            throw new IllegalArgumentException();
+        }
     }
 
     public double totalProductPrice() {
@@ -48,13 +58,10 @@ public class Order extends BaseEntity {
     }
 
     public void cancel() {
-        if (this.isCancellable()) {
+        if (this.status.isShippingChangeable()) {
             throw new RuntimeException();
         }
         this.status = OrderStatus.CANCELLED;
     }
 
-    private boolean isCancellable() {
-        return this.status.isShippingChangeable();
-    }
 }
