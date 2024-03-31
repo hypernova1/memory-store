@@ -1,19 +1,6 @@
 package org.sam.store.common.repository;
 
-import org.sam.store.product.Product;
-import org.sam.store.product.ProductRepository;
-import org.springframework.beans.factory.config.BeanDefinition;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.ClassPathScanningCandidateComponentProvider;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.type.classreading.MetadataReader;
-import org.springframework.core.type.classreading.MetadataReaderFactory;
-import org.springframework.core.type.filter.AssignableTypeFilter;
-import org.springframework.core.type.filter.TypeFilter;
-import org.springframework.util.ClassUtils;
-
-import java.lang.reflect.Proxy;
-import java.util.Set;
 
 @Configuration
 public class RepositoryBean {

@@ -2,7 +2,7 @@ package org.sam.store.common.util;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import org.junit.jupiter.api.Test;
-import org.sam.store.product.Product;
+import org.sam.store.product.domain.Product;
 
 import java.util.List;
 

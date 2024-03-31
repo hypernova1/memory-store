@@ -1,15 +1,16 @@
-package org.sam.store.order;
+package org.sam.store.order.domain;
 
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.sam.store.common.BaseEntity;
-import org.sam.store.common.constant.OrderStatus;
 import org.sam.store.common.exception.ProductNotFoundException;
 import org.sam.store.common.repository.annotation.Column;
 import org.sam.store.common.repository.annotation.Entity;
 import org.sam.store.common.repository.annotation.Id;
-import org.sam.store.product.Product;
+import org.sam.store.order.ui.OrderForm;
+import org.sam.store.order.ui.OrderProductDto;
+import org.sam.store.product.domain.Product;
 
 import java.util.ArrayList;
 import java.util.Arrays;

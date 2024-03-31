@@ -1,4 +1,4 @@
-package org.sam.store.payment;
+package org.sam.store.payment.domain;
 
 
 import lombok.AccessLevel;

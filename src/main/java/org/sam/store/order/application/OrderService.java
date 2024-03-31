@@ -1,10 +1,13 @@
-package org.sam.store.order;
+package org.sam.store.order.application;
 
 import lombok.AllArgsConstructor;
 import org.sam.store.common.exception.OrderNotFoundException;
-import org.sam.store.product.Product;
-import org.sam.store.product.ProductQuantityInfo;
-import org.sam.store.product.ProductService;
+import org.sam.store.order.domain.Order;
+import org.sam.store.order.domain.OrderRepository;
+import org.sam.store.order.ui.OrderForm;
+import org.sam.store.product.domain.Product;
+import org.sam.store.product.ui.ProductQuantityInfo;
+import org.sam.store.product.application.ProductService;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;

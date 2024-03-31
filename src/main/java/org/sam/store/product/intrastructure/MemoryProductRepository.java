@@ -1,13 +1,13 @@
-package org.sam.store.product;
+package org.sam.store.product.intrastructure;
 
 import org.sam.store.common.repository.DefaultMemoryRepository;
 import org.sam.store.common.util.CsvUtil;
-import org.sam.store.order.Order;
+import org.sam.store.product.domain.Product;
+import org.sam.store.product.domain.ProductRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Repository

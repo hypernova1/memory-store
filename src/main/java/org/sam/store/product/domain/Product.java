@@ -1,4 +1,4 @@
-package org.sam.store.product;
+package org.sam.store.product.domain;
 
 import lombok.Getter;
 import lombok.ToString;

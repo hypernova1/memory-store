@@ -1,4 +1,4 @@
-package org.sam.store.order;
+package org.sam.store.order.domain;
 
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -6,7 +6,7 @@ import lombok.NoArgsConstructor;
 import org.sam.store.common.repository.annotation.Column;
 import org.sam.store.common.repository.annotation.Entity;
 import org.sam.store.common.repository.annotation.Id;
-import org.sam.store.product.Product;
+import org.sam.store.product.domain.Product;
 
 @Entity
 @Getter

@@ -2,6 +2,7 @@ package org.sam.store.product;
 
 import org.junit.jupiter.api.Test;
 import org.sam.store.common.exception.SoldOutException;
+import org.sam.store.product.domain.Product;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;

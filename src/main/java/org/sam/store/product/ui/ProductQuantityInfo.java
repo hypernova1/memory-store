@@ -1,4 +1,4 @@
-package org.sam.store.product;
+package org.sam.store.product.ui;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

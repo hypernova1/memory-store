@@ -1,8 +1,11 @@
-package org.sam.store.product;
+package org.sam.store.product.application;
 
 import lombok.AllArgsConstructor;
 import org.sam.store.common.exception.ProductNotFoundException;
 import org.sam.store.common.lock.LockManager;
+import org.sam.store.product.domain.Product;
+import org.sam.store.product.domain.ProductRepository;
+import org.sam.store.product.ui.ProductQuantityInfo;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;

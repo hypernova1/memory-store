@@ -4,9 +4,9 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.sam.store.common.repository.exception.IdNotExistException;
-import org.sam.store.order.OrderRepository;
-import org.sam.store.product.Product;
-import org.sam.store.product.ProductRepository;
+import org.sam.store.order.domain.OrderRepository;
+import org.sam.store.product.domain.Product;
+import org.sam.store.product.domain.ProductRepository;
 
 import java.lang.reflect.Proxy;
 import java.util.ArrayList;

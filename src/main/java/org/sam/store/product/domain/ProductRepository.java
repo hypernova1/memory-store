@@ -1,4 +1,4 @@
-package org.sam.store.product;
+package org.sam.store.product.domain;
 
 import org.sam.store.common.repository.Repository;
 

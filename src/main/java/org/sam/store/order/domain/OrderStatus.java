@@ -1,4 +1,4 @@
-package org.sam.store.common.constant;
+package org.sam.store.order.domain;
 
 public enum OrderStatus {
     PAYMENT_WAITING {

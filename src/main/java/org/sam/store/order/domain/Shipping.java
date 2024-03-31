@@ -1,4 +1,4 @@
-package org.sam.store.order;
+package org.sam.store.order.domain;
 
 public class Shipping {
 

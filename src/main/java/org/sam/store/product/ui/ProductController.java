@@ -1,6 +1,8 @@
-package org.sam.store.product;
+package org.sam.store.product.ui;
 
 import lombok.AllArgsConstructor;
+import org.sam.store.product.domain.Product;
+import org.sam.store.product.application.ProductService;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;

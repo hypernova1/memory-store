@@ -1,6 +1,7 @@
-package org.sam.store.order;
+package org.sam.store.order.ui;
 
 import lombok.AllArgsConstructor;
+import org.sam.store.order.application.OrderService;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
