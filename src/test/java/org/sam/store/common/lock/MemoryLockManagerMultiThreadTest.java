@@ -75,7 +75,6 @@ public class MemoryLockManagerMultiThreadTest extends MemoryLockManagerTest {
 
         TestMemoryLockManager testMemoryLockManager = new TestMemoryLockManager();
 
-
         ExecutorService executorService = Executors.newFixedThreadPool(NUMBER_OR_THREADS);
         CountDownLatch latch = new CountDownLatch(NUMBER_OR_THREADS);
 

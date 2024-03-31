@@ -51,10 +51,10 @@ public class Order extends BaseEntity {
         if (this.isCancellable()) {
             throw new RuntimeException();
         }
-        this.status = OrderStatus.CANCEL;
+        this.status = OrderStatus.CANCELLED;
     }
 
     private boolean isCancellable() {
-        return !(this.status == OrderStatus.COMPLETE || this.status == OrderStatus.CANCEL);
+        return this.status.isShippingChangeable();
     }
 }
