@@ -28,7 +28,6 @@ public class OrderService {
                 .collect(Collectors.toCollection(ArrayList::new));
         
         List<Product> products = productService.decreaseProductsQuantity(productQuantityInfos);
-
         Order order = Order.create(orderForm, products);
         this.orderRepository.save(order);
     }

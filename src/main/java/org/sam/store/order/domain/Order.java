@@ -39,6 +39,13 @@ public class Order extends BaseEntity {
         return order;
     }
 
+    public void cancel() {
+        if (this.status.isShippingChangeable()) {
+            throw new RuntimeException();
+        }
+        this.status = OrderStatus.CANCELLED;
+    }
+
     private void addOrderProducts(OrderForm orderForm, List<Product> products) {
         for (OrderProductDto orderProductDto : orderForm.getProducts()) {
             Product product = products.stream().filter((p) -> p.getId().equals(orderProductDto.getProductId())).findFirst()
@@ -56,13 +63,6 @@ public class Order extends BaseEntity {
     public double totalProductPrice() {
         double[] prices = this.orderProducts.stream().mapToDouble(OrderProduct::price).toArray();
         return Arrays.stream(prices).sum();
-    }
-
-    public void cancel() {
-        if (this.status.isShippingChangeable()) {
-            throw new RuntimeException();
-        }
-        this.status = OrderStatus.CANCELLED;
     }
 
 }

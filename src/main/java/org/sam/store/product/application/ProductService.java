@@ -30,32 +30,37 @@ public class ProductService {
 
     public List<Product> decreaseProductsQuantity(List<ProductQuantityInfo> productQuantityInfos) {
         List<String> productIds = productQuantityInfos.stream().map(ProductQuantityInfo::getProductId).collect(Collectors.toCollection(ArrayList::new));
-
         List<String> lockKeys = this.acquireQuantityLocks(productIds);
 
-        List<Product> products = this.productRepository.findByIds(productIds);
+        try {
 
-        products.forEach((product) -> {
-            int quantity = productQuantityInfos.stream().filter((pq) -> pq.getProductId().equals(product.getId())).findFirst().get().getQuantity();
-            product.decreaseQuantity(quantity);
-        });
+            List<Product> products = this.productRepository.findByIds(productIds);
 
-        this.releaseQuantityLocks(lockKeys);
-        return products;
+            products.forEach((product) -> {
+                int quantity = productQuantityInfos.stream().filter((pq) -> pq.getProductId().equals(product.getId())).findFirst().get().getQuantity();
+                product.decreaseQuantity(quantity);
+            });
+            return products;
+        } finally {
+            this.releaseQuantityLocks(lockKeys);
+        }
     }
 
     public List<Product> increaseProductsQuantity(List<ProductQuantityInfo> productQuantityInfos) {
         List<String> productIds = productQuantityInfos.stream().map(ProductQuantityInfo::getProductId).collect(Collectors.toCollection(ArrayList::new));
         List<String> lockKeys = this.acquireQuantityLocks(productIds);
+        try {
 
-        List<Product> products = this.productRepository.findByIds(productIds);
-        products.forEach((product) -> {
-            int quantity = productQuantityInfos.stream().filter((pq) -> pq.getProductId().equals(product.getId())).findFirst().get().getQuantity();
-            product.increaseQuantity(quantity);
-        });
+            List<Product> products = this.productRepository.findByIds(productIds);
+            products.forEach((product) -> {
+                int quantity = productQuantityInfos.stream().filter((pq) -> pq.getProductId().equals(product.getId())).findFirst().get().getQuantity();
+                product.increaseQuantity(quantity);
+            });
+            return products;
 
-        this.releaseQuantityLocks(lockKeys);
-        return products;
+        } finally {
+            this.releaseQuantityLocks(lockKeys);
+        }
     }
 
     private List<String> acquireQuantityLocks(List<String> ids) {
