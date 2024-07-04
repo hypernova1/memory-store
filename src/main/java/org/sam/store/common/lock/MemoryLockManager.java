@@ -3,86 +3,115 @@ package org.sam.store.common.lock;
 
 import org.springframework.stereotype.Component;
 
-import java.util.*;
+import java.util.Map;
+import java.util.Optional;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.TimeoutException;
 
 @Component
 public class MemoryLockManager implements LockManager {
 
     private static final long DEFAULT_ADDITIONAL_MILLISECONDS = 1000 * 60L;
-    private final List<Lock> locks = Collections.synchronizedList(new ArrayList<>());
+    private final Map<String, Lock> locks = new ConcurrentHashMap<>();
 
+    /**
+     * 락을 획득한다.
+     * - 같은 키로 이미 락이 있다면 해제될 때까지 대기한다.
+     *
+     * @param key 락 키
+     */
     @Override
-    public synchronized void acquire(String id) {
-        while (exists(id)) {
-            try {
-                wait();
-            } catch (InterruptedException e) {
-                throw new RuntimeException(e);
-            }
-        }
-        set(id);
-        notifyAll();
+    public void acquire(String key) {
+        long startTime = System.currentTimeMillis();
+        long timeout = 1000 * 30;
+        long elapsedTime = 0;
 
-    }
-
-    @Override
-    public void set(String id) {
-        this.set(id, DEFAULT_ADDITIONAL_MILLISECONDS);
-    }
-
-    public void set(String id, long additionalMilliSeconds) {
         synchronized (locks) {
-            if (exists(id)) {
-                throw new AlreadyLockException();
-            }
-            Lock lock = new Lock(id, additionalMilliSeconds);
-            locks.add(lock);
-        }
-    }
-
-    @Override
-    public void release(String id) {
-        synchronized (locks) {
-            Iterator<Lock> iterator = locks.iterator();
-            while (iterator.hasNext()) {
-                Lock nextLock = iterator.next();
-                if (nextLock.getId().equals(id)) {
-                    iterator.remove();
-                    break;
+            while (exists(key)) {
+                try {
+                    long waitTime = timeout - elapsedTime;
+                    if (waitTime <= 0) {
+                        throw new TimeoutException("락 획득 실패. key: " + key);
+                    }
+                    locks.wait(waitTime);
+                    elapsedTime = System.currentTimeMillis() - startTime;
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                    throw new RuntimeException(e);
+                } catch (TimeoutException e) {
+                    throw new RuntimeException(e);
                 }
             }
+            set(key);
         }
+
     }
 
+    /**
+     * 락을 저장한다.
+     *
+     * @param key 락 키
+     */
     @Override
-    public void extendsTime(String id, long nanoTime) {
-        Lock lock = this.findLock(id).orElseThrow(NoLockException::new);
-        lock.extendExpiredTime(nanoTime);
+    public void set(String key) {
+        this.set(key, DEFAULT_ADDITIONAL_MILLISECONDS);
     }
 
+    /**
+     * 락을 저장한다.
+     *
+     * @param key                    락 키
+     * @param additionalMilliSeconds 락 만료 시간 ms
+     */
+    public synchronized void set(String key, long additionalMilliSeconds) {
+        if (exists(key)) {
+            throw new AlreadyLockException();
+        }
+        Lock lock = new Lock(key, additionalMilliSeconds);
+        locks.put(key, lock);
+    }
+
+    /**
+     * 락을 해제한다.
+     *
+     * @param key 락 키
+     */
     @Override
-    public boolean exists(String id) {
+    public void release(String key) {
         synchronized (locks) {
-            Optional<Lock> lock = this.findLock(id);
-            if (lock.isEmpty()) {
-                return false;
-            }
-            if (lock.get().isExpired()) {
-                release(id);
-                return false;
-            }
-            return true;
+            locks.remove(key);
+            locks.notifyAll();
         }
     }
 
-    public Lock get(String id) {
-        return this.findLock(id).orElseThrow(NoLockException::new);
+    /**
+     * 락 존재 여부를 확인한다.
+     *
+     * @param key 락 키
+     * @return 락 존재 여부
+     */
+    @Override
+    public synchronized boolean exists(String key) {
+        Optional<Lock> lock = this.findLock(key);
+        if (lock.isEmpty()) {
+            return false;
+        }
+        if (lock.get().isExpired()) {
+            release(key);
+            return false;
+        }
+        return true;
     }
 
-    private Optional<Lock> findLock(String id) {
-        synchronized (locks) {
-            return this.locks.stream().filter((l) -> l.getId().equals(id)).findFirst();
-        }
+    /**
+     * 락을 찾는다.
+     *
+     * @param key 락 키
+     * @return 락
+     */
+    private Optional<Lock> findLock(String key) {
+        Lock value = this.locks.get(key);
+        return Optional.ofNullable(value);
     }
 
 }

@@ -43,16 +43,4 @@ class MemoryLockManagerTest {
         assertDoesNotThrow(() -> memoryLockManager.set(LOCK_KEY));
     }
 
-    @Test
-    void test_extend_time() {
-        memoryLockManager.set(LOCK_KEY);
-        Lock lock = memoryLockManager.get(LOCK_KEY);
-        LocalDateTime beforeExpiredTime = lock.getExpiredTime();
-
-        memoryLockManager.extendsTime(LOCK_KEY, 1000 * 60);
-        LocalDateTime afterExpiredTime = lock.getExpiredTime();
-
-        assertThat(beforeExpiredTime.isBefore(afterExpiredTime)).isTrue();
-    }
-
 }
